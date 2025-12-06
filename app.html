@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFP Listings - Procurement Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #202124;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 500;
+            color: #1B76FF;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-small.primary {
+            background-color: #1B76FF;
+            color: white;
+        }
+
+        .btn-small.primary:hover {
+            background-color: #1557b0;
+        }
+
+        .btn-small.secondary {
+            background-color: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        .btn-small.secondary:hover {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 32px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #202124;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1B76FF;
+        }
+
+        .results-info {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 16px;
+        }
+
+        .rfp-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .rfp-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .rfp-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left-color: #1B76FF;
+        }
+
+        .rfp-card-header {
+            background: linear-gradient(135deg, #1B76FF 0%, #0d5bbf 100%);
+            padding: 24px;
+            color: white;
+        }
+
+        .rfp-card-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .rfp-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            flex: 1;
+        }
+
+        .rfp-id {
+            font-size: 12px;
+            opacity: 0.9;
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .status-closing {
+            background-color: #FE4A22;
+            color: white;
+        }
+
+        .status-open {
+            background-color: #0BB96D;
+            color: white;
+        }
+
+        .rfp-meta-header {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .meta-header-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-header-label {
+            font-size: 11px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-header-value {
+            font-size: 14px;
+        }
+
+        .rfp-card-body {
+            padding: 24px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background-color: #1B76FF;
+            border-radius: 2px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #5f6368;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .info-value.highlight {
+            color: #FE4A22;
+            font-weight: 500;
+        }
+
+        .description-text {
+            color: #3c4043;
+            font-size: 14px;
+            line-height: 1.8;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #1B76FF;
+        }
+
+        .rfp-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .btn-action {
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-action.primary {
+            background-color: #1B76FF;
+            color: white;
+        }
+
+        .btn-action.primary:hover {
+            background-color: #1557b0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .btn-action.success {
+            background-color: #0BB96D;
+            color: white;
+        }
+
+        .btn-action.success:hover {
+            background-color: #099959;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .btn-action.secondary {
+            background-color: transparent;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        .btn-action.secondary:hover {
+            background-color: #f8f9fa;
+            border-color: #5f6368;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px 24px;
+            color: #5f6368;
+            font-size: 13px;
+            margin-top: 48px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 16px auto;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+
+            .filter-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .rfp-card-header {
+                padding: 16px;
+            }
+
+            .rfp-title {
+                font-size: 17px;
+            }
+
+            .rfp-meta-header {
+                grid-template-columns: 1fr;
+            }
+
+            .rfp-card-body {
+                padding: 16px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rfp-actions {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">Procurement Portal</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Active RFPs & Tenders</h1>
+            <p class="page-subtitle">Browse and submit proposals for open procurement opportunities</p>
+        </div>
+
+        <div class="results-info">Showing 5 active opportunities</div>
+
+        <div class="rfp-list">
+            <!-- RFP Card 1 -->
+            <div class="rfp-card">
+                <div class="rfp-card-header">
+                    <div class="rfp-card-header-top">
+                        <div style="flex: 1;">
+                            <h2 class="rfp-title">Supply of XLPE Insulated Unarmoured Power Cables for Electrical Infrastructure Project</h2>
+                            <div class="rfp-id">RFP-2025-0823-XLPE-01</div>
+                        </div>
+                        <span class="status-badge status-closing">Closing Soon</span>
+                    </div>
+                    <div class="rfp-meta-header">
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Organization</span>
+                            <span class="meta-header-value">Metro Energy Solutions Ltd.</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Issue Date</span>
+                            <span class="meta-header-value">04-Dec-2025</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Deadline</span>
+                            <span class="meta-header-value">18-Dec-2025, 17:00 IST</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rfp-card-body">
+                    <div class="section">
+                        <div class="section-title">General Information</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Department</span>
+                                <span class="info-value">Department of Electrical Engineering</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value">Power & Energy / Electrical Infrastructure</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Procurement Type</span>
+                                <span class="info-value">Open Tender / RFP</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Deadline</span>
+                                <span class="info-value highlight">18-Dec-2025, 17:00 IST</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Description</div>
+                        <div class="description-text">
+                            Metro Energy Solutions Ltd. invites proposals from qualified suppliers for the supply of high-quality XLPE insulated unarmoured power cables to support our upcoming electrical infrastructure project. The required cable must have a copper conductor with a cross-sectional area of 6 sqmm and a voltage rating of 0.6/1 kV. The insulation thickness should be 0.7 mm with an overall outer diameter of 8 mm, ensuring compliance with IEC-60502-1 standards. The conductor resistance must be 0.86 ohm/km, the test voltages should be 56/58 kV, and the cable capacitance should be 3.08 µF/km. The supplier must provide cables that have passed type tests and routine tests, and all materials must meet industry-standard quality and safety requirements. Interested vendors should submit proposals including technical specifications, pricing, delivery timelines, and evidence of compliance with the required standards. The expected delivery timeframe is six weeks from the date of award, and vendors are requested to ensure full compliance with the specifications and mandatory tests listed herein.
+                        </div>
+                    </div>
+                    <div class="rfp-actions">
+                        <button class="btn-action success">Submit Proposal</button>
+                        <button class="btn-action primary">View Full Details</button>
+                        <button class="btn-action secondary">Download Document</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RFP Card 2 -->
+            <div class="rfp-card">
+                <div class="rfp-card-header">
+                    <div class="rfp-card-header-top">
+                        <div style="flex: 1;">
+                            <h2 class="rfp-title">Supply of Speaker Wire Twin Parallel for Audio Systems Upgrade</h2>
+                            <div class="rfp-id">RFP-2025-1215-AUDIO-02</div>
+                        </div>
+                        <span class="status-badge status-open">Open</span>
+                    </div>
+                    <div class="rfp-meta-header">
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Organization</span>
+                            <span class="meta-header-value">SoundTech Solutions Pvt. Ltd.</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Issue Date</span>
+                            <span class="meta-header-value">04-Dec-2025</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Deadline</span>
+                            <span class="meta-header-value">20-Dec-2025, 16:00 IST</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rfp-card-body">
+                    <div class="section">
+                        <div class="section-title">General Information</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Department</span>
+                                <span class="info-value">Audio Engineering Division</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value">Electronics / Audio Systems</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Procurement Type</span>
+                                <span class="info-value">Open Tender / RFP</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Deadline</span>
+                                <span class="info-value highlight">20-Dec-2025, 16:00 IST</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Description</div>
+                        <div class="description-text">
+                            SoundTech Solutions Pvt. Ltd. invites proposals from experienced suppliers for the supply of high-quality speaker wire twin parallel cables for our audio systems upgrade project. The cables must have copper conductors with a cross-sectional area of 1 sqmm and a voltage rating of 0.3/0.3 kV suitable for audio signal transmission. The insulation thickness should be 0.5 mm, with an overall outer diameter of 5.2 mm, ensuring compliance with IEC-60228 standards. The conductor resistance must be 0.08 ohm/km, and the test voltages should be 10/9 kV with a capacitance of 18.1 µF/km. All cables must pass mandatory type and routine tests to ensure performance and safety. Vendors should submit technical specifications, unit pricing, delivery schedule, and documentation confirming compliance with the stated standards. The expected delivery is within four weeks of contract award. Preference will be given to suppliers with proven experience in supplying audio cabling for professional systems and who can guarantee adherence to the stated specifications.
+                        </div>
+                    </div>
+                    <div class="rfp-actions">
+                        <button class="btn-action success">Submit Proposal</button>
+                        <button class="btn-action primary">View Full Details</button>
+                        <button class="btn-action secondary">Download Document</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RFP Card 3 -->
+            <div class="rfp-card">
+                <div class="rfp-card-header">
+                    <div class="rfp-card-header-top">
+                        <div style="flex: 1;">
+                            <h2 class="rfp-title">Supply of Multicore Flexible Aluminium Cables for Industrial Wiring</h2>
+                            <div class="rfp-id">RFP-2025-1208-FLEX-03</div>
+                        </div>
+                        <span class="status-badge status-open">Open</span>
+                    </div>
+                    <div class="rfp-meta-header">
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Organization</span>
+                            <span class="meta-header-value">IndusPower Systems Ltd.</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Issue Date</span>
+                            <span class="meta-header-value">04-Dec-2025</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Deadline</span>
+                            <span class="meta-header-value">22-Dec-2025, 15:00 IST</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rfp-card-body">
+                    <div class="section">
+                        <div class="section-title">General Information</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Department</span>
+                                <span class="info-value">Electrical Projects Division</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value">Power & Energy / Industrial Wiring</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Procurement Type</span>
+                                <span class="info-value">Open Tender / RFP</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Deadline</span>
+                                <span class="info-value highlight">22-Dec-2025, 15:00 IST</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Description</div>
+                        <div class="description-text">
+                            IndusPower Systems Ltd. invites proposals from qualified vendors for the supply of multicore flexible cables to support our industrial wiring projects. The required cables must have aluminium conductors with a cross-sectional area of 0.75 sqmm and a voltage rating of 0.45/0.45 kV. The insulation thickness should be 0.6 mm with an overall diameter of 4.9 mm, ensuring compliance with IS-694 standards. Conductor resistance should be 0.04 ohm/km, test voltages of 6/5 kV, and capacitance of 38.2 µF/km. All supplied cables must have successfully passed type and routine tests and meet all safety and performance standards. Vendors are requested to submit proposals including detailed technical specifications, pricing, delivery timelines, and evidence of compliance with mandatory tests. Expected delivery is within five weeks of award. Preference will be given to suppliers with experience in providing flexible cables for industrial applications who can ensure full compliance with the specified standards.
+                        </div>
+                    </div>
+                    <div class="rfp-actions">
+                        <button class="btn-action success">Submit Proposal</button>
+                        <button class="btn-action primary">View Full Details</button>
+                        <button class="btn-action secondary">Download Document</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RFP Card 4 -->
+            <div class="rfp-card">
+                <div class="rfp-card-header">
+                    <div class="rfp-card-header-top">
+                        <div style="flex: 1;">
+                            <h2 class="rfp-title">Supply of Solar DC Cables (TUV Certified) for Renewable Energy Projects</h2>
+                            <div class="rfp-id">RFP-2025-1220-SOLAR-01</div>
+                        </div>
+                        <span class="status-badge status-open">Open</span>
+                    </div>
+                    <div class="rfp-meta-header">
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Organization</span>
+                            <span class="meta-header-value">GreenVolt Solutions Ltd.</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Issue Date</span>
+                            <span class="meta-header-value">04-Dec-2025</span>
+                        </div>
+                        <div class="meta-header-item">
+                            <span class="meta-header-label">Deadline</span>
+                            <span class="meta-header-value">23-Dec-2025, 16:00 IST</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="rfp-card-body">
+                    <div class="section">
+                        <div class="section-title">General Information</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Department</span>
+                                <span class="info-value">Renewable Energy Division</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value">Renewable Energy / Solar Power</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Procurement Type</span>
+                                <span class="info-value">Open Tender / RFP</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Deadline</span>
+                                <span class="info-value highlight">23-Dec-2025, 16:00 IST</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">Description</div>
+                        <div class="description-text">
+                            GreenVolt Solutions Ltd. invites qualified suppliers to submit proposals for the supply of high-quality Solar DC cables for our solar energy installations. The required cables must have copper conductors with a cross-sectional area of 6 sqmm and a voltage rating of 1.5/1.5 kV. Insulation thickness should be 0.8 mm, with an overall outer diameter of 8 mm, in compliance with TUV-2PFG-1169 standards. The conductor resistance must be 0.85 ohm/km, test voltages of 44/42 kV, and cable capacitance of 3.3 µF/km. All cables must pass mandatory type and routine tests and meet stringent performance and safety standards for solar applications. Vendors should provide technical specifications, pricing, delivery schedules, and certifications demonstrating compliance. Expected delivery is within six weeks from award. Preference will be given to suppliers with proven experience supplying TUV-certified solar cables and adherence to international quality standards.
+                        </div>
+                    </div>
+                    <div class="rfp-actions">
+                        <button class="btn-action success">Submit Proposal</button>
+                        <button class="btn-action primary">View Full Details</button>
+                        <button class="btn-action secondary">Download Document</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RFP Card 5 -->
+            
